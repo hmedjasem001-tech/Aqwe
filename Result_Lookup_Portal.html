@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة النتائج الإمتحانية - استعلام الكود</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Cairo & Tajawal -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                        tajawal: ['Tajawal', 'sans-serif'],
+                    },
+                    colors: {
+                        najah: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                            dark: '#0f172a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Cairo', 'Tajawal', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+
+        /* Glassmorphism styling */
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .result-card-glow {
+            box-shadow: 0 10px 40px -10px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Animations */
+        .animate-pop-up {
+            animation: popUp 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popUp {
+            from { opacity: 0; transform: scale(0.96) translateY(12px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="flex flex-col justify-between min-h-screen bg-slate-950 text-slate-100 antialiased selection:bg-blue-600 selection:text-white">
+
+    <!-- Header / Navigation Bar -->
+    <header class="bg-slate-900/90 border-b border-slate-800 sticky top-0 z-30 backdrop-blur-md">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <!-- Brand / Logo -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-700 to-indigo-500 flex items-center justify-center text-white font-extrabold text-xl shadow-lg shadow-blue-500/20">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="font-extrabold text-lg md:text-xl text-white tracking-tight">بوابة النتائج الإمتحانية</h1>
+                        <span class="bg-blue-600/20 text-blue-400 text-[10px] font-bold px-2 py-0.5 rounded border border-blue-500/30">سريع ومباشر</span>
+                    </div>
+                    <p class="text-xs text-slate-400">منصة الاستعلام المباشر عن طريق كود النتيجة</p>
+                </div>
+            </div>
+
+            <!-- Admin Toggle Button -->
+            <button onclick="toggleAdminModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 px-3.5 py-2 rounded-xl text-xs md:text-sm font-semibold transition flex items-center gap-2">
+                <i class="fa-solid fa-sliders text-blue-400"></i>
+                <span class="hidden sm:inline">إدارة الأكواد والروابط</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="max-w-4xl mx-auto w-full px-4 py-8 flex-grow space-y-8">
+
+        <!-- Search Card -->
+        <section class="glass-panel rounded-3xl p-6 md:p-10 shadow-2xl relative overflow-hidden">
+            <!-- Decorative Glow Background -->
+            <div class="absolute -top-24 -right-24 w-60 h-60 bg-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-24 -left-24 w-60 h-60 bg-indigo-600/15 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="text-center max-w-xl mx-auto mb-8 relative z-10">
+                <span class="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3.5 py-1 rounded-full text-xs font-bold inline-block mb-3">
+                    <i class="fa-solid fa-bolt ml-1 text-yellow-400"></i> خوادم سريعة - عرض مباشر
+                </span>
+                <h2 class="text-2xl md:text-4xl font-black text-white mb-3 tracking-tight">أدخل الكود الخاص بك لإظهار النتيجة</h2>
+                <p class="text-slate-400 text-xs md:text-sm leading-relaxed">
+                    اكتب رمز الكود أو الرقم الامتحاني للحصول على الصورة الكاملة للنتيجة والرابط المباشر.
+                </p>
+            </div>
+
+            <!-- Search Form -->
+            <form id="searchForm" onsubmit="handleSearch(event)" class="max-w-2xl mx-auto relative z-10">
+                <div class="relative flex items-center">
+                    <input type="text" id="searchInput" placeholder="أدخل الكود هنا (مثال: 101, 102, NAJAH2026)..." 
+                           class="w-full bg-slate-950/80 text-white placeholder-slate-500 px-5 py-4 pl-36 pr-12 text-base md:text-lg rounded-2xl border-2 border-slate-700/80 focus:border-blue-500 focus:outline-none transition shadow-inner font-mono tracking-wider">
+                    
+                    <div class="absolute right-4 text-slate-400 pointer-events-none">
+                        <i class="fa-solid fa-magnifying-glass text-lg"></i>
+                    </div>
+
+                    <div class="absolute left-2 flex items-center gap-1.5">
+                        <button type="button" onclick="clearSearch()" id="clearBtn" class="hidden text-slate-400 hover:text-white p-2 rounded-lg text-sm transition">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-5 py-2.5 rounded-xl transition shadow-lg shadow-blue-600/30 flex items-center gap-2 text-sm md:text-base">
+                            <span>عرض</span>
+                            <i class="fa-solid fa-arrow-left text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Demo Preset Buttons -->
+            <div class="flex flex-wrap items-center justify-center gap-2 mt-6 text-xs text-slate-400 relative z-10">
+                <span class="text-slate-500 font-semibold">أكواد جاهزة للتجربة:</span>
+                <button onclick="quickSearch('101')" class="bg-slate-800 hover:bg-blue-600 hover:text-white text-slate-300 px-3 py-1 rounded-lg transition font-mono border border-slate-700">101</button>
+                <button onclick="quickSearch('102')" class="bg-slate-800 hover:bg-blue-600 hover:text-white text-slate-300 px-3 py-1 rounded-lg transition font-mono border border-slate-700">102</button>
+                <button onclick="quickSearch('NAJAH2026')" class="bg-slate-800 hover:bg-blue-600 hover:text-white text-slate-300 px-3 py-1 rounded-lg transition font-mono border border-slate-700">NAJAH2026</button>
+                <button onclick="quickSearch('RESULT77')" class="bg-slate-800 hover:bg-blue-600 hover:text-white text-slate-300 px-3 py-1 rounded-lg transition font-mono border border-slate-700">RESULT77</button>
+            </div>
+        </section>
+
+        <!-- Result Display Section (Full Bleed Image + Direct Link Options) -->
+        <section id="resultSection" class="hidden animate-pop-up">
+            <!-- Dynamically Rendered Result Card -->
+        </section>
+
+        <!-- Not Found State Card -->
+        <section id="notFoundSection" class="hidden animate-pop-up glass-panel rounded-3xl p-8 text-center max-w-md mx-auto border border-rose-500/20 shadow-xl">
+            <div class="w-16 h-16 bg-rose-500/10 text-rose-400 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl border border-rose-500/20">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">عذراً، الكود غير مسجل!</h3>
+            <p class="text-slate-400 text-xs md:text-sm mb-6 leading-relaxed">
+                لم نجد أي نتيجة مطابقة لهذا الكود. يرجى التأكد من كتابة الكود بشكل صحيح أو إضافته عبر لوحة الإدارة.
+            </p>
+            <button onclick="toggleAdminModal()" class="inline-flex items-center gap-2 text-xs text-blue-400 hover:text-blue-300 font-bold bg-blue-500/10 px-4 py-2 rounded-xl border border-blue-500/20 transition">
+                <i class="fa-solid fa-plus"></i>
+                إضافة هذا الكود ورابط الصورة الآن
+            </button>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900/60 border-t border-slate-800 py-6 text-center text-xs text-slate-500">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>بوابة نتائج موقع نجاح - نظام العرض المباشر</span>
+            </div>
+            <p>جميع الحقوق محفوظة &copy; <span id="year"></span></p>
+        </div>
+    </footer>
+
+    <!-- Full-Screen Lightbox Modal -->
+    <div id="imageLightbox" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md hidden flex items-center justify-center p-2 sm:p-4 animate-pop-up" onclick="closeLightbox()">
+        <!-- Close Button -->
+        <button onclick="closeLightbox()" class="absolute top-4 right-4 bg-slate-800/80 hover:bg-slate-700 text-white w-10 h-10 rounded-full flex items-center justify-center text-xl z-20 border border-slate-600">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="max-w-5xl max-h-[92vh] w-full flex flex-col items-center justify-center relative" onclick="event.stopPropagation()">
+            <img id="lightboxImage" src="" alt="صورة النتيجة الكاملة" class="max-w-full max-h-[82vh] object-contain rounded-lg shadow-2xl border border-slate-800">
+            
+            <div class="mt-3 bg-slate-900/90 text-slate-200 px-4 py-2 rounded-xl border border-slate-800 text-xs sm:text-sm font-semibold flex items-center gap-3">
+                <span id="lightboxCaption">عرض النتيجة بحجمها الكامل</span>
+                <a id="lightboxDownloadBtn" href="#" target="_blank" class="text-blue-400 hover:underline flex items-center gap-1">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> فتح الرابط المباشر
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin & Code Management Modal -->
+    <div id="adminModal" class="fixed inset-0 z-40 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-pop-up">
+            
+            <!-- Modal Header -->
+            <div class="bg-slate-950 px-6 py-4 border-b border-slate-800 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-blue-600/20 text-blue-400 flex items-center justify-center">
+                        <i class="fa-solid fa-database"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-white text-base">إدارة الأكواد وروابط الصور</h3>
+                        <p class="text-[11px] text-slate-400">أضف كود جديد واربطه برابط صورة مباشرة كوقع نجاح</p>
+                    </div>
+                </div>
+                <button onclick="toggleAdminModal()" class="text-slate-400 hover:text-white text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body (Scrollable) -->
+            <div class="p-6 overflow-y-auto flex-grow space-y-6">
+                
+                <!-- Add Code Form -->
+                <div class="bg-slate-950/60 p-5 rounded-2xl border border-slate-800 space-y-4">
+                    <h4 class="font-bold text-sm text-slate-200 flex items-center gap-2">
+                        <i class="fa-solid fa-plus-circle text-blue-400"></i>
+                        إضافة أو تعديل كود ونتيجة
+                    </h4>
+
+                    <form id="addCodeForm" onsubmit="saveCode(event)" class="space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-300 mb-1">رمز الكود / الرقم الامتحاني *</label>
+                                <input type="text" id="newCodeKey" required placeholder="مثال: 103 أو RESULT2026" 
+                                       class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-3.5 py-2.5 text-xs md:text-sm font-mono uppercase focus:outline-none focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-300 mb-1">عنوان النتيجة / الاسم *</label>
+                                <input type="text" id="newCodeTitle" required placeholder="مثال: نتيجة الطالب أحمد علي" 
+                                       class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-3.5 py-2.5 text-xs md:text-sm focus:outline-none focus:border-blue-500">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-300 mb-1">تفاصيل أو ملاحضات إضافية</label>
+                            <input type="text" id="newCodeDesc" placeholder="مثال: الفرع العلمي - المدرسة المركزية - ناجح" 
+                                   class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-3.5 py-2.5 text-xs md:text-sm focus:outline-none focus:border-blue-500">
+                        </div>
+
+                        <!-- Image URL / File Section -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-300 mb-1">رابط صورة النتيجة المباشر (Direct Image URL) *</label>
+                            <div class="space-y-2">
+                                <input type="url" id="newCodeImageUrl" placeholder="https://example.com/result-image.jpg" 
+                                       class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-3.5 py-2.5 text-xs md:text-sm focus:outline-none focus:border-blue-500 dir-ltr text-left">
+                                
+                                <div class="flex items-center gap-2 pt-1">
+                                    <span class="text-[11px] text-slate-400">أو اختيار صورة محلياً:</span>
+                                    <input type="file" id="newCodeFileInput" accept="image/*" onchange="handleFileUpload(event)" class="text-xs text-slate-400 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-600/20 file:text-blue-400 hover:file:bg-blue-600/30">
+                                </div>
+                            </div>
+
+                            <!-- Preview thumbnail -->
+                            <div id="imagePreviewContainer" class="hidden mt-3 flex items-center gap-3 bg-slate-900 p-2.5 rounded-xl border border-slate-800">
+                                <img id="imagePreview" src="" class="w-14 h-14 object-cover rounded-lg border border-slate-700">
+                                <span class="text-xs text-emerald-400 font-semibold"><i class="fa-solid fa-check ml-1"></i> تم اختيار الصورة بنجاح</span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl text-xs sm:text-sm transition shadow-lg shadow-blue-600/20">
+                            حفظ وتفعيل الكود
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Existing Codes List -->
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="font-bold text-xs sm:text-sm text-slate-300 flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-slate-500"></i>
+                            قائمة الأكواد المسجلة في النظام
+                        </h4>
+                        <button onclick="resetToDefaults()" class="text-xs text-rose-400 hover:text-rose-300 font-semibold">
+                            إعادة ضبط للأصل
+                        </button>
+                    </div>
+
+                    <div id="codesList" class="space-y-2 max-h-56 overflow-y-auto pr-1">
+                        <!-- Rendered dynamically -->
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="bg-slate-950 p-4 border-t border-slate-800 text-left">
+                <button onclick="toggleAdminModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-5 py-2 rounded-xl text-xs font-bold transition">
+                    إغلاق
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Default codes dataset designed with full result images matching Iraq/Najah style
+        const DEFAULT_CODES = {
+            "101": {
+                code: "101",
+                title: "نتيجة الطالب: محمد علي حسين",
+                description: "الدور الأول - الفرع العلمي (التطبيقي) - المعدل: 96.5%",
+                image: "https://placehold.co/1200x800/1e293b/3b82f6?text=EXAM+RESULT+101+%0A+STUDENT:+MOHAMMED+ALI+%0A+STATUS:+PASSED+(96.5%25)"
+            },
+            "102": {
+                code: "102",
+                title: "نتيجة الطالبة: زينب أحمد جاسم",
+                description: "الدور الأول - الفرع الأدبي - المعدل: 94.0%",
+                image: "https://placehold.co/1200x800/1e293b/10b981?text=EXAM+RESULT+102+%0A+STUDENT:+ZAINAB+AHMED+%0A+STATUS:+PASSED+(94.0%25)"
+            },
+            "NAJAH2026": {
+                code: "NAJAH2026",
+                title: "الوثيقة النموذجية الرسمية - موقع نجاح",
+                description: "سجل نتائج الامتحانات العامة للتربية - النسخة الكلية المعتمدة",
+                image: "https://placehold.co/1200x900/0f172a/6366f1?text=NAJAH+OFFICIAL+RESULT+DOCUMENT+2026+%0A+VERIFIED+OFFICIAL+RECORD"
+            },
+            "RESULT77": {
+                code: "RESULT77",
+                title: "نتيجة المعهد العالي لتقنية المعلومات",
+                description: "الدرجة الكلية: ممتاز - التخصص: أمن البيانات",
+                image: "https://placehold.co/1200x800/1e293b/f59e0b?text=RESULT+77+%0A+DIPLOMA+DEGREE:+EXCELLENT"
+            }
+        };
+
+        let codesDatabase = {};
+        let uploadedImageBase64 = null;
+
+        // Initialize App on load
+        window.onload = function() {
+            document.getElementById('year').textContent = new Date().getFullYear();
+            loadDatabase();
+
+            // Real-time listener for search field
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.trim();
+                const clearBtn = document.getElementById('clearBtn');
+                
+                if (query) {
+                    clearBtn.classList.remove('hidden');
+                    // Instant trigger if length >= 2
+                    if (query.length >= 2) {
+                        performLookup(query, false);
+                    }
+                } else {
+                    clearBtn.classList.add('hidden');
+                    hideResults();
+                }
+            });
+        };
+
+        function loadDatabase() {
+            const stored = localStorage.getItem('najah_app_codes_db');
+            if (stored) {
+                try {
+                    codesDatabase = JSON.parse(stored);
+                } catch(e) {
+                    codesDatabase = { ...DEFAULT_CODES };
+                }
+            } else {
+                codesDatabase = { ...DEFAULT_CODES };
+                saveDatabaseToStorage();
+            }
+            renderCodesList();
+        }
+
+        function saveDatabaseToStorage() {
+            localStorage.setItem('najah_app_codes_db', JSON.stringify(codesDatabase));
+        }
+
+        function handleSearch(e) {
+            e.preventDefault();
+            const query = document.getElementById('searchInput').value.trim();
+            if (query) {
+                performLookup(query, true);
+            }
+        }
+
+        function quickSearch(code) {
+            const input = document.getElementById('searchInput');
+            input.value = code;
+            document.getElementById('clearBtn').classList.remove('hidden');
+            performLookup(code, true);
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('clearBtn').classList.add('hidden');
+            hideResults();
+        }
+
+        function hideResults() {
+            document.getElementById('resultSection').classList.add('hidden');
+            document.getElementById('notFoundSection').classList.add('hidden');
+        }
+
+        function performLookup(queryCode, scrollOnSuccess = false) {
+            const normalizedQuery = queryCode.trim().toUpperCase();
+            
+            const matchedKey = Object.keys(codesDatabase).find(
+                key => key.toUpperCase() === normalizedQuery
+            );
+
+            const resultSection = document.getElementById('resultSection');
+            const notFoundSection = document.getElementById('notFoundSection');
+
+            if (matchedKey) {
+                const item = codesDatabase[matchedKey];
+                renderResultCard(item);
+                resultSection.classList.remove('hidden');
+                notFoundSection.classList.add('hidden');
+
+                if (scrollOnSuccess) {
+                    resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            } else {
+                resultSection.classList.add('hidden');
+                notFoundSection.classList.remove('hidden');
+            }
+        }
+
+        function renderResultCard(item) {
+            const container = document.getElementById('resultSection');
+            const imageUrl = item.image;
+
+            container.innerHTML = `
+                <div class="glass-panel rounded-3xl overflow-hidden shadow-2xl border border-slate-700/80 result-card-glow">
+                    
+                    <!-- Card Header / Info -->
+                    <div class="bg-slate-900/90 border-b border-slate-800 p-4 sm:p-6 flex flex-wrap justify-between items-center gap-3">
+                        <div class="flex items-center gap-3">
+                            <span class="w-3.5 h-3.5 bg-emerald-500 rounded-full animate-pulse shadow-lg shadow-emerald-500/50"></span>
+                            <div>
+                                <span class="text-xs font-bold text-blue-400 font-mono uppercase tracking-wider block">الكود المطابق: ${escapeHtml(item.code)}</span>
+                                <h3 class="text-lg sm:text-2xl font-black text-white">${escapeHtml(item.title)}</h3>
+                            </div>
+                        </div>
+                        <span class="text-xs bg-slate-800 text-slate-400 border border-slate-700 px-3 py-1 rounded-full">
+                            تاريخ العرض: ${new Date().toLocaleDateString('ar-EG')}
+                        </span>
+                    </div>
+
+                    ${item.description ? `
+                    <div class="bg-slate-950/40 px-6 py-3 border-b border-slate-800/60">
+                        <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                            <i class="fa-solid fa-circle-info text-blue-400 ml-1"></i> ${escapeHtml(item.description)}
+                        </p>
+                    </div>` : ''}
+
+                    <!-- FULL BLEED IMAGE CONTAINER (ممتلئة تماماً كموقع نجاح) -->
+                    <div class="relative w-full bg-slate-950 group overflow-hidden">
+                        <img src="${escapeHtml(imageUrl)}" 
+                             alt="${escapeHtml(item.title)}" 
+                             class="w-full h-auto max-h-[75vh] object-contain sm:object-cover w-full block transition-transform duration-500 group-hover:scale-[1.01]"
+                             onerror="this.onerror=null; this.src='https://placehold.co/1200x800/0f172a/f43f5e?text=Image+Load+Error';">
+                        
+                        <!-- Overlay Zoom Trigger -->
+                        <div class="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center cursor-pointer"
+                             onclick="openLightbox('${escapeHtml(imageUrl)}', '${escapeHtml(item.title)}')">
+                            <span class="bg-blue-600/90 text-white font-bold px-4 py-2 rounded-xl text-xs sm:text-sm shadow-xl flex items-center gap-2">
+                                <i class="fa-solid fa-expand"></i> تكبير الصورة بالشاشة الكاملة
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Direct Image Link & Action Toolbar (مثل موقع نجاح) -->
+                    <div class="p-4 sm:p-6 bg-slate-900/90 border-t border-slate-800 space-y-4">
+                        
+                        <!-- Direct URL Box -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1.5 flex items-center gap-1.5">
+                                <i class="fa-solid fa-link text-blue-400"></i>
+                                الرابط المباشر لصورة النتيجة (Direct Image Link):
+                            </label>
+                            <div class="flex items-center gap-2">
+                                <input type="text" readonly value="${escapeHtml(imageUrl)}" id="directUrlInput" 
+                                       class="w-full bg-slate-950 text-blue-300 border border-slate-700/80 rounded-xl px-3.5 py-2 text-xs sm:text-sm font-mono dir-ltr text-left focus:outline-none select-all">
+                                
+                                <button onclick="copyDirectLink('${escapeHtml(imageUrl)}')" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition flex-shrink-0 flex items-center gap-1.5 shadow-md">
+                                    <i class="fa-solid fa-copy"></i>
+                                    <span>نسخ الرابط</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Secondary Toolbar Buttons -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 border-t border-slate-800/80">
+                            <a href="${escapeHtml(imageUrl)}" target="_blank" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold py-2.5 px-3 rounded-xl transition text-center flex items-center justify-center gap-1.5 border border-slate-700">
+                                <i class="fa-solid fa-arrow-up-right-from-square text-blue-400"></i>
+                                فتح نافذة مستقلة
+                            </a>
+                            <button onclick="openLightbox('${escapeHtml(imageUrl)}', '${escapeHtml(item.title)}')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold py-2.5 px-3 rounded-xl transition text-center flex items-center justify-center gap-1.5 border border-slate-700">
+                                <i class="fa-solid fa-maximize text-emerald-400"></i>
+                                ملء الشاشة
+                            </button>
+                            <button onclick="shareResult('${escapeHtml(item.code)}', '${escapeHtml(item.title)}')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold py-2.5 px-3 rounded-xl transition text-center flex items-center justify-center gap-1.5 border border-slate-700">
+                                <i class="fa-solid fa-share-nodes text-purple-400"></i>
+                                مشاركة النتيجة
+                            </button>
+                            <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold py-2.5 px-3 rounded-xl transition text-center flex items-center justify-center gap-1.5 border border-slate-700">
+                                <i class="fa-solid fa-print text-amber-400"></i>
+                                طباعة
+                            </button>
+                        </div>
+
+                    </div>
+
+                </div>
+            `;
+        }
+
+        function copyDirectLink(url) {
+            const dummy = document.createElement('textarea');
+            document.body.appendChild(dummy);
+            dummy.value = url;
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+
+            showToast('تم نسخ الرابط المباشر بنجاح!');
+        }
+
+        function showToast(msg) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-5 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs font-bold px-5 py-3 rounded-2xl shadow-2xl z-50 animate-pop-up flex items-center gap-2 border border-blue-400';
+            toast.innerHTML = `<i class="fa-solid fa-check-circle"></i> ${msg}`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2500);
+        }
+
+        function toggleAdminModal() {
+            const modal = document.getElementById('adminModal');
+            modal.classList.toggle('hidden');
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedImageBase64 = e.target.result;
+                    document.getElementById('imagePreview').src = uploadedImageBase64;
+                    document.getElementById('imagePreviewContainer').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function saveCode(e) {
+            e.preventDefault();
+            const codeKey = document.getElementById('newCodeKey').value.trim().toUpperCase();
+            const title = document.getElementById('newCodeTitle').value.trim();
+            const desc = document.getElementById('newCodeDesc').value.trim();
+            const urlImg = document.getElementById('newCodeImageUrl').value.trim();
+
+            let finalImage = urlImg;
+            if (uploadedImageBase64) {
+                finalImage = uploadedImageBase64;
+            } else if (!finalImage) {
+                finalImage = `https://placehold.co/1200x800/1e293b/3b82f6?text=RESULT+CODE+${encodeURIComponent(codeKey)}`;
+            }
+
+            codesDatabase[codeKey] = {
+                code: codeKey,
+                title: title,
+                description: desc,
+                image: finalImage
+            };
+
+            saveDatabaseToStorage();
+            renderCodesList();
+            
+            // Reset Form
+            document.getElementById('addCodeForm').reset();
+            document.getElementById('imagePreviewContainer').classList.add('hidden');
+            uploadedImageBase64 = null;
+
+            showToast(`تم حفظ وتفعيل الكود [${codeKey}] بنجاح!`);
+        }
+
+        function deleteCode(key) {
+            if (confirm(`هل أنت تأكد من حذف الكود "${key}"؟`)) {
+                delete codesDatabase[key];
+                saveDatabaseToStorage();
+                renderCodesList();
+                
+                const currentSearch = document.getElementById('searchInput').value.trim().toUpperCase();
+                if (currentSearch === key) {
+                    clearSearch();
+                }
+            }
+        }
+
+        function resetToDefaults() {
+            if (confirm('هل ترغب في إعادة جميع الأكواد إلى الحالية الافتراضية؟')) {
+                codesDatabase = { ...DEFAULT_CODES };
+                saveDatabaseToStorage();
+                renderCodesList();
+                clearSearch();
+            }
+        }
+
+        function renderCodesList() {
+            const container = document.getElementById('codesList');
+            const keys = Object.keys(codesDatabase);
+
+            if (keys.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-500 text-center py-4">لا توجد أكواد مسجلة حالياً.</p>`;
+                return;
+            }
+
+            container.innerHTML = keys.map(key => {
+                const item = codesDatabase[key];
+                return `
+                    <div class="flex items-center justify-between p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs">
+                        <div class="flex items-center gap-3 overflow-hidden">
+                            <img src="${escapeHtml(item.image)}" class="w-10 h-10 object-cover rounded-lg border border-slate-800 flex-shrink-0" onerror="this.src='https://placehold.co/100?text=IMG'">
+                            <div class="truncate">
+                                <span class="font-bold text-blue-400 font-mono">${escapeHtml(item.code)}</span>
+                                <p class="text-slate-400 truncate text-[11px]">${escapeHtml(item.title)}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <button onclick="quickSearch('${escapeHtml(item.code)}'); toggleAdminModal();" class="p-1.5 text-blue-400 hover:bg-blue-600/20 rounded-lg" title="عرض النتيجة">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                            <button onclick="deleteCode('${escapeHtml(item.code)}')" class="p-1.5 text-rose-400 hover:bg-rose-600/20 rounded-lg" title="حذف">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openLightbox(imgSrc, title) {
+            document.getElementById('lightboxImage').src = imgSrc;
+            document.getElementById('lightboxCaption').textContent = title;
+            document.getElementById('lightboxDownloadBtn').href = imgSrc;
+            document.getElementById('imageLightbox').classList.remove('hidden');
+        }
+
+        function closeLightbox() {
+            document.getElementById('imageLightbox').classList.add('hidden');
+        }
+
+        function shareResult(code, title) {
+            const shareText = `نتيجة الاستعلام للكود [${code}]: ${title}`;
+            if (navigator.share) {
+                navigator.share({
+                    title: 'نتيجة الاستعلام',
+                    text: shareText,
+                    url: window.location.href
+                }).catch(() => {});
+            } else {
+                copyDirectLink(window.location.href);
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
